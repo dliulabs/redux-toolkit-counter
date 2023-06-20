@@ -1,46 +1,113 @@
-# Getting Started with Create React App
+# Getting Started with React with Reduxjs Toolkit App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
+This is a demo React app using Reduxjs-Toolkit.
+We will create a small counter example.
 
-## Available Scripts
+The correct steps to use the latest reduxjs-toolkit are:
 
-In the project directory, you can run:
+## Create a project with template
 
-### `yarn start`
+- using the `redux-typescript` template to start a project template.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+yarn create react-app redux-toolkit-counter --template redux-typescript
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Create a Redux State Slice (the counterSlice)
 
-### `yarn test`
+[Create a Redux State Slice](https://redux.js.org/tutorials/quick-start#create-a-redux-state-slice)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+`/src/features/counter/counter-slice.ts`
 
-### `yarn build`
+- define CounterState, initialState, counterSlice.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+a slice is a reducer with a state and a set of actions.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- create a `counterSlice` under a folder called `features`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  - define the interface for the `CounterState`
+  - then define an `initialState` for the counter `reducer`.
+  - then we need to define a set of reducers: a set of actions (e.g. incrment, decrement, etc.)
 
-### `yarn eject`
+  all of these can be done using the `createSlice()` function.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+  The `counterSlice` should export the `CounterState`, the `counterSlice`, the actions, and then the `counterSlice.reducer`.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- empty the `/src` folder
+- add back index.tsx/index.css, App.tsx/App.css, react-app-env.d.ts, logo.svg
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Create an empty Redux Store
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+We then create a `store` under a folder called `app`.
+We will use the `configureStore({reducer: ...})` from the reduxjs-toolkit to create this store.
 
-## Learn More
+- Add Slice Reducers to the Store: [add the counterSlice.reducers to the store](https://redux.js.org/tutorials/quick-start#add-slice-reducers-to-the-store)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The store should export the `store`, the `store.dispatch` and the `RootState`:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```typescript
+export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>;
+```
+
+[create a redux store](https://redux.js.org/tutorials/quick-start#create-a-redux-store)
+
+## Provide the Redux Store to React
+
+The way to wire the store to the app is to import the `store` and the `Provider` the wrap the store inside of the provider as in:
+
+```typescript
+import App from "./App";
+import { store } from "./app/store";
+import { Provider } from "react-redux";
+
+const el = document.getElementById("root");
+const root = ReactDOM.createRoot(el!);
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+```
+
+The `<App />` will then render the `<Counter />` redux component.
+
+At this time, you should be able start the app with `yarn start` and see the state in the `Redux DevTools`.
+
+[Wire the index.tsx to use `Provider` and `store`](https://redux.js.org/tutorials/quick-start#provide-the-redux-store-to-react)
+
+## Exporting the Redux Hooks
+
+Create a file called `hooks.ts` under the foler `/app`.
+
+Export an app-specific dispatch hook `useAppDispatch` and an app-specific selector hook `useAppSelector`
+
+```typescript
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "./store";
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+```
+
+## Create a React component \<Counter /> using the Redux hooks
+
+- replace a traditional `useState()` with `useAppSelector()` and `useAppDispatch()`.
+
+  - instead of using a state variable `count`, we will use `useAppSelector()` to get the store value.
+  - instead of using `setCount` state hook, we will use `dispatch` to call an action.
+
+```typescript
+const [incrementAmount, setIncrementAmount] = useState("2");
+const count = useAppSelector((state) => state.counter.value);
+const dispatch = useAppDispatch();
+console.log(count);
+```
+
+## Call the Redux component from the \<App />
+
+```typescript
+import { Counter } from "./features/counter/Counter";
+
+<Counter />;
+```
