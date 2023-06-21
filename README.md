@@ -13,6 +13,9 @@ The correct steps to use the latest reduxjs-toolkit are:
 yarn create react-app redux-toolkit-counter --template redux-typescript
 ```
 
+- empty the `/src` folder
+- add back index.tsx/index.css, App.tsx/App.css, react-app-env.d.ts, logo.svg
+
 ## Create a Redux State Slice (the counterSlice)
 
 [Create a Redux State Slice](https://redux.js.org/tutorials/quick-start#create-a-redux-state-slice)
@@ -32,9 +35,6 @@ a slice is a reducer with a state and a set of actions.
   all of these can be done using the `createSlice()` function.
 
   The `counterSlice` should export the `CounterState`, the `counterSlice`, the actions, and then the `counterSlice.reducer`.
-
-- empty the `/src` folder
-- add back index.tsx/index.css, App.tsx/App.css, react-app-env.d.ts, logo.svg
 
 ## Create an empty Redux Store
 
